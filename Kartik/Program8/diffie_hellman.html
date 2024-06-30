@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Diffie-Hellman Key Exchange</title>
+</head>
+<body>
+<h1>Diffie-Hellman Key Exchange</h1>
+
+<div id="alice">
+  <h2>Alice</h2>
+  <label for="alice-private-key">Private Key:</label>
+  <input type="text" id="alice-private-key" value="5"><br>
+  <button onclick="generatePublicKey('alice')">Generate Public Key</button><br>
+  <label for="alice-public-key">Public Key:</label>
+  <input type="text" id="alice-public-key" readonly><br>
+</div>
+
+<div id="bob">
+  <h2>Bob</h2>
+  <label for="bob-private-key">Private Key:</label>
+  <input type="text" id="bob-private-key" value="7"><br>
+  <button onclick="generatePublicKey('bob')">Generate Public Key</button><br>
+  <label for="bob-public-key">Public Key:</label>
+  <input type="text" id="bob-public-key" readonly><br>
+</div>
+
+<button onclick="calculateSharedSecret()">Calculate Shared Secret</button><br>
+<label for="shared-secret">Shared Secret:</label>
+<input type="text" id="shared-secret" readonly>
+
+<script>
+function modExp(base, exponent, modulus) {
+  if (modulus === 1) return 0;
+  let result = 1;
+  base = base % modulus;
+  while (exponent > 0) {
+    if (exponent % 2 === 1) {
+      result = (result * base) % modulus;
+    }
+    exponent = Math.floor(exponent / 2);
+    base = (base * base) % modulus;
+  }
+  return result;
+}
+
+function generatePublicKey(user) {
+  const privateKey = parseInt(document.getElementById(`${user}-private-key`).value);
+  const base = 5; // Common base value for Diffie-Hellman
+  const modulus = 23; // Common modulus value for Diffie-Hellman
+  const publicKey = modExp(base, privateKey, modulus);
+  document.getElementById(`${user}-public-key`).value = publicKey;
+}
+
+function calculateSharedSecret() {
+  const alicePrivateKey = parseInt(document.getElementById("alice-private-key").value);
+  const bobPublicKey = parseInt(document.getElementById("bob-public-key").value);
+  const sharedSecret = modExp(bobPublicKey, alicePrivateKey, 23);
+  document.getElementById("shared-secret").value = sharedSecret;
+}
+</script>
+
+</body>
+</html>
+
